@@ -722,10 +722,10 @@ def monkeypatch_or_replace_lora_extended(
     for _module, name, _child_module in _find_modules(
         model,
         target_replace_module,
-        search_class=[nn.Linear, LoraInjectedLinear, LoRACompatibleLinear, nn.Conv2d, LoraInjectedConv2d],
+        search_class=[nn.Linear, LoraInjectedLinear, nn.Conv2d, LoraInjectedConv2d],
     ):
 
-        if _child_module.__class__ in {nn.Linear, LoraInjectedLinear, LoRACompatibleLinear}:
+         if (_child_module.__class__ == nn.Linear) or (_child_module.__class__ == LoraInjectedLinear):
             if len(loras[0].shape) != 2:
                 continue
 
@@ -779,7 +779,11 @@ def monkeypatch_or_replace_lora_extended(
                 _tmp.conv.bias = bias
 
         # switch the module
-        _module._modules[name] = _tmp
+        try:
+            _module._modules[name] = _tmp
+        except Exception as e:
+            print(_child_module.__class__)
+            raise(e)
 
         up_weight = loras.pop(0)
         down_weight = loras.pop(0)
