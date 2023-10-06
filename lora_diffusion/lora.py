@@ -725,7 +725,9 @@ def monkeypatch_or_replace_lora_extended(
         search_class=[nn.Linear, LoraInjectedLinear, nn.Conv2d, LoraInjectedConv2d],
     ):
 
-         if (_child_module.__class__ == nn.Linear) or (_child_module.__class__ == LoraInjectedLinear):
+        if (_child_module.__class__ == nn.Linear) or (
+            _child_module.__class__ == LoraInjectedLinear
+        ):
             if len(loras[0].shape) != 2:
                 continue
 
